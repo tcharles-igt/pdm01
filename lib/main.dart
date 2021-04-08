@@ -22,21 +22,19 @@ class _HomeState extends State<Home> {
   var _lastRemoved = {};
   var _lastRemovedPos = 0;
 
-  Future<File> _getFile() async {
-    final dir = await getApplicationDocumentsDirectory();
-    return File("${dir.path}/lista.json");
-  }
-
   Future<File> _saveData() async {
-    var data = json.encode(_toDoList);
-    final file = await _getFile();
+    String data = json.encode(_toDoList);
+    final directotory = await getApplicationDocumentsDirectory();
+    final file = File("${directotory.path}/data.json");
     return file.writeAsString(data);
   }
 
-  Future<String> _readData() async {
+  Future<String> _loadData() async {
     try {
-      final file = await _getFile();
-      return file.readAsString();
+      final directotory = await getApplicationDocumentsDirectory();
+      final file = File("${directotory.path}/data.json");
+      String data = await file.readAsString();
+      _toDoList = json.decode(data);
     } catch(e) {
       return null;
     }
@@ -45,10 +43,8 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    _readData().then((data) {
-      setState(() {
-        _toDoList = json.decode(data);
-      });
+    setState(() {
+      _loadData();
     });
   }
 
